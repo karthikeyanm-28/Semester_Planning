@@ -1,8 +1,17 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useUser } from '@/context/UserContext';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 
 export function AppLayout() {
+  const { isAuthenticated } = useUser();
+  const location = useLocation();
+
+  // Don't show layout for landing page
+  if (!isAuthenticated || location.pathname === '/landing') {
+    return <Outlet />;
+  }
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">

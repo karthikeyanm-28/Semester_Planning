@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAcademic } from '@/context/AcademicContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -6,36 +6,66 @@ import { KpiCard } from '@/components/shared/KpiCard';
 import { Clock, AlertTriangle, TrendingDown, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import type { WeeklyBlock } from '@/types/academic';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const PERIODS: ('Morning' | 'Afternoon' | 'Evening')[] = ['Morning', 'Afternoon', 'Evening'];
+
+function generateUUID() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
 
 export default function WeeklyPlanner() {
   const { data, addWeeklyPlan, updateWeeklyPlan } = useAcademic();
   const { toast } = useToast();
 
-  const currentPlan = data.weeklyPlans[0] || { id: crypto.randomUUID(), weekStart: new Date().toISOString().slice(0, 10), blocks: [] };
-  const [blocks, setBlocks] = useState(currentPlan.blocks);
+  const currentPlan = data.weeklyPlans && data.weeklyPlans.length > 0 
+    ? data.weeklyPlans[0] 
+    : { 
+        id: generateUUID(), 
+        weekStart: new Date().toISOString().slice(0, 10), 
+        blocks: [] as WeeklyBlock[] 
+      };
+
+  const [blocks, setBlocks] = useState<WeeklyBlock[]>(currentPlan.blocks || []);
+
+  useEffect(() => {
+    setBlocks(currentPlan.blocks || []);
+  }, [currentPlan.id]);
 
   const getBlock = (day: string, period: string) => blocks.find(b => b.day === day && b.period === period);
 
   const setBlock = (day: string, period: 'Morning' | 'Afternoon' | 'Evening', subjectId: string) => {
     setBlocks(prev => {
       const filtered = prev.filter(b => !(b.day === day && b.period === period));
-      if (subjectId) filtered.push({ day, period, subjectId, actual: false });
+      if (subjectId) {
+        filtered.push({ day, period, subjectId, actual: false });
+      }
       return filtered;
     });
   };
 
   const toggleActual = (day: string, period: string) => {
-    setBlocks(prev => prev.map(b => b.day === day && b.period === period ? { ...b, actual: !b.actual } : b));
+    setBlocks(prev => prev.map(b => 
+      b.day === day && b.period === period 
+        ? { ...b, actual: !b.actual } 
+        : b
+    ));
   };
 
   const savePlan = () => {
     const plan = { ...currentPlan, blocks };
-    if (data.weeklyPlans.length) updateWeeklyPlan(plan);
-    else addWeeklyPlan(plan);
-    toast({ title: 'Saved', description: 'Weekly plan updated.' });
+    try {
+      if (data.weeklyPlans && data.weeklyPlans.length > 0) {
+        updateWeeklyPlan(plan);
+      } else {
+        addWeeklyPlan(plan);
+      }
+      toast({ title: 'Saved', description: 'Weekly plan updated.' });
+    } catch (error) {
+      console.error('Error saving plan:', error);
+      toast({ title: 'Error', description: 'Failed to save weekly plan.' });
+    }
   };
 
   const stats = useMemo(() => {
@@ -43,7 +73,7 @@ export default function WeeklyPlanner() {
     const actual = blocks.filter(b => b.actual).length * 2;
     const overloaded = DAYS.filter(d => blocks.filter(b => b.day === d).length >= 3);
     const underused = DAYS.filter(d => blocks.filter(b => b.day === d).length === 0);
-    return { planned, actual, overloaded, underused };
+    return { planned, actual, overloaded: overloaded || [], underused: underused || [] };
   }, [blocks]);
 
   return (
@@ -57,10 +87,31 @@ export default function WeeklyPlanner() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title="Planned Hours" value={stats.planned} icon={Clock} />
-        <KpiCard title="Actual Hours" value={stats.actual} icon={CheckCircle} variant="success" />
-        <KpiCard title="Overloaded Days" value={stats.overloaded.length} icon={AlertTriangle} variant={stats.overloaded.length > 0 ? 'warning' : 'default'} description={stats.overloaded.join(', ') || 'None'} />
-        <KpiCard title="Underutilized Days" value={stats.underused.length} icon={TrendingDown} variant={stats.underused.length > 2 ? 'danger' : 'default'} description={stats.underused.join(', ') || 'None'} />
+        <KpiCard 
+          title="Planned Hours" 
+          value={stats.planned} 
+          icon={Clock} 
+        />
+        <KpiCard 
+          title="Actual Hours" 
+          value={stats.actual} 
+          icon={CheckCircle} 
+          variant="success" 
+        />
+        <KpiCard 
+          title="Overloaded Days" 
+          value={stats.overloaded.length} 
+          icon={AlertTriangle} 
+          variant={stats.overloaded.length > 0 ? 'warning' : 'default'}
+          description={stats.overloaded.length > 0 ? stats.overloaded.join(', ') : 'None'} 
+        />
+        <KpiCard 
+          title="Underutilized Days" 
+          value={stats.underused.length} 
+          icon={TrendingDown} 
+          variant={stats.underused.length > 2 ? 'danger' : 'default'}
+          description={stats.underused.length > 0 ? stats.underused.join(', ') : 'None'} 
+        />
       </div>
 
       <Card>
