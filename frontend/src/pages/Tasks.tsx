@@ -147,12 +147,12 @@ export default function Tasks() {
         <div className="flex flex-wrap gap-2">
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Select value={filterSubject} onValueChange={setFilterSubject}>
+            <Select value={filterSubject || 'all'} onValueChange={v => setFilterSubject(v === 'all' ? '' : v)}>
               <SelectTrigger className="w-48 pl-10">
                 <SelectValue placeholder="All Subjects" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Subjects</SelectItem>
+                <SelectItem value="all">All Subjects</SelectItem>
                 {data.subjects.map(s => (
                   <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                 ))}
@@ -160,24 +160,24 @@ export default function Tasks() {
             </Select>
           </div>
 
-          <Select value={filterPriority} onValueChange={setFilterPriority}>
+          <Select value={filterPriority || 'all'} onValueChange={v => setFilterPriority(v === 'all' ? '' : v)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Priorities" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Priorities</SelectItem>
+              <SelectItem value="all">All Priorities</SelectItem>
               <SelectItem value="Low">Low</SelectItem>
               <SelectItem value="Medium">Medium</SelectItem>
               <SelectItem value="High">High</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <Select value={filterStatus || 'all'} onValueChange={v => setFilterStatus(v === 'all' ? '' : v)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="In Progress">In Progress</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>

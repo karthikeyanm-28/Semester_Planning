@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getAnalytics, Analytics } from "firebase/analytics";
-
+import { getFirestore } from "firebase/firestore";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBnf_sdN-CZbosAhQrcFnWEsW9hiZfBbF4",
@@ -17,6 +17,7 @@ const firebaseConfig = {
 let app: any;
 let auth: Auth | null = null;
 let analytics: Analytics | null = null;
+let db: any = null;
 
 try {
   app = initializeApp(firebaseConfig);
@@ -33,6 +34,9 @@ try {
     analytics = null;
   }
   
+  db = getFirestore(app);
+  console.log("✓ Firestore initialized");
+  
   console.log("✓ Firebase fully initialized");
 } catch (error: any) {
   const errorMsg = error?.message || String(error);
@@ -47,6 +51,6 @@ if (!auth && app) {
   }
 }
 
-export { app, auth, analytics };
+export { app, auth, analytics, db };
 
 

@@ -17,7 +17,7 @@ const noteSchema = new mongoose.Schema({
   },
   subjectId: {
     type: String,
-    required: true,
+    default: '',
   },
   content: {
     type: String,

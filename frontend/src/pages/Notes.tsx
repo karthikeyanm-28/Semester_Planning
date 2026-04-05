@@ -180,12 +180,12 @@ export default function Notes() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="subject" className="text-xs font-semibold">Subject</Label>
-                <Select value={form.subjectId} onValueChange={v => setForm(p => ({ ...p, subjectId: v }))}>
+                <Select value={form.subjectId || 'general'} onValueChange={v => setForm(p => ({ ...p, subjectId: v === 'general' ? '' : v }))}>
                   <SelectTrigger id="subject">
                     <SelectValue placeholder="General" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">General</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
                     {data.subjects.map(s => (
                       <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                     ))}
@@ -213,15 +213,6 @@ export default function Notes() {
               {editing ? 'Update Note' : 'Create Note'}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-            </div>
-            <div><Label>Content</Label><Textarea rows={5} value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} /></div>
-          </div>
-          <DialogFooter><Button onClick={save}>{editing ? 'Update' : 'Add'}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

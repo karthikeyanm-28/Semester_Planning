@@ -20,6 +20,7 @@ import Alerts from "./pages/Alerts";
 import Summary from "./pages/Summary";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Roadmap from "./pages/Roadmap";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +38,7 @@ function ProtectedRoute({ element }: { element: React.ReactNode }) {
 function AppContent() {
   const { isAuthenticated, isLoading } = useUser();
 
-  // Show loading screen
+  // Show loading screen with timeout fallback
   if (isLoading) {
     return (
       <div style={{
@@ -45,25 +46,27 @@ function AppContent() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f8fafc',
         margin: 0,
         padding: 0,
+        width: '100%',
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #007bff',
-            borderTop: '4px solid transparent',
+            width: '50px',
+            height: '50px',
+            border: '4px solid #e2e8f0',
+            borderTop: '4px solid #2563eb',
             borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
             margin: '0 auto 20px'
           }}></div>
           <p style={{ 
-            color: '#333',
+            color: '#64748b',
             fontSize: '16px',
-            fontFamily: 'Arial, sans-serif',
-            margin: 0
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            margin: 0,
+            fontWeight: '500'
           }}>
             Loading...
           </p>
@@ -101,6 +104,7 @@ function AppContent() {
         <Route path="/notes" element={<Notes />} />
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/summary" element={<Summary />} />
+        <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<NotFound />} />
@@ -113,9 +117,11 @@ const App = () => {
     <div style={{
       width: '100%',
       minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: '#f8fafc',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      margin: 0,
+      padding: 0
     }}>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>

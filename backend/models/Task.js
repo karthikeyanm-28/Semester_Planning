@@ -17,7 +17,7 @@ const taskSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Assignment', 'Exam', 'Quiz', 'Lab'],
+    enum: ['Assignment', 'Exam', 'Quiz', 'Lab', 'Project'],
     required: true,
   },
   subjectId: {

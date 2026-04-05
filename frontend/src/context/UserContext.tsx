@@ -58,18 +58,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     // Immediate check - if auth is not initialized, set loading to false
     if (!auth) {
-      console.warn("Firebase auth not initialized");
-      setIsLoading(false);
-      return;
+      console.warn("⚠️ Firebase auth not initialized - showing landing page");
+      // Set a very short timeout to ensure UI is responsive
+      timeoutId = setTimeout(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }, 100);
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
 
-    // Fallback timeout to prevent infinite loading (3 seconds)
+    // Fallback timeout to prevent infinite loading (800ms)
     timeoutId = setTimeout(() => {
       if (isMounted) {
-        console.warn("Auth state check timed out after 3s - setting isLoading to false");
+        console.warn("⚠️ Auth state check timed out - showing landing page");
         setIsLoading(false);
       }
-    }, 3000);
+    }, 800);
 
     try {
       const unsubscribe = onAuthStateChanged(auth, 
@@ -84,13 +91,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
               const userData = await syncUserWithBackend(firebaseUser);
               setStoredUser(userData);
               setUser(userData);
+              console.log('✓ User authenticated:', userData.email);
             } else {
               // User is signed out
               setStoredUser(null);
               setUser(null);
+              console.log('✓ No user authenticated');
             }
           } catch (error) {
             console.error('Error processing auth state:', error);
+            // Even on error, stop loading and show UI
+            setIsLoading(false);
           } finally {
             if (isMounted) {
               setIsLoading(false);
@@ -98,7 +109,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           }
         },
         (error) => {
-          console.error('Firebase auth error:', error);
+          console.error('❌ Firebase auth error:', error);
           clearTimeout(timeoutId);
           if (isMounted) {
             setIsLoading(false);
@@ -109,10 +120,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       return () => {
         isMounted = false;
         clearTimeout(timeoutId);
-        unsubscribe();
+        try {
+          unsubscribe();
+        } catch (e) {
+          // Unsubscribe error is not critical
+        }
       };
     } catch (error) {
-      console.error('Error setting up auth listener:', error);
+      console.error('❌ Error setting up auth listener:', error);
       clearTimeout(timeoutId);
       if (isMounted) {
         setIsLoading(false);

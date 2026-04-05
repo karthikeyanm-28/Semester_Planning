@@ -272,21 +272,3 @@ export default function Dashboard() {
     </div>
   );
 }
-                <p className="font-semibold">{stats.mostDemanding.name}</p>
-                <p className="text-xs text-muted-foreground">{stats.mostDemanding.taskCount} tasks · {stats.mostDemanding.difficulty} difficulty</p>
-              </div>
-            ) : <p className="text-sm text-muted-foreground">No subjects yet</p>}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><BookMarked className="h-4 w-4 text-amber-500" /> Academic Risk</CardTitle></CardHeader>
-          <CardContent>
-            <StatusBadge status={stats.risk} />
-            <p className="text-xs text-muted-foreground mt-1">Based on overdue & pending tasks</p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}

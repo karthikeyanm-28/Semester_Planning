@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, BookOpen, ListTodo, Calendar,
   BarChart3, Target, StickyNote, AlertTriangle, PieChart,
-  LogOut, Plus, GraduationCap,
+  LogOut, Plus, GraduationCap, Map,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useUser } from '@/context/UserContext';
@@ -26,6 +26,7 @@ const items = [
   { title: 'Notes', url: '/notes', icon: StickyNote },
   { title: 'Alerts', url: '/alerts', icon: AlertTriangle },
   { title: 'Summary', url: '/summary', icon: PieChart },
+  { title: 'Roadmap', url: '/roadmap', icon: Map },
 ];
 
 export function AppSidebar() {

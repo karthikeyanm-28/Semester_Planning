@@ -7,7 +7,7 @@ const weeklyBlockSchema = new mongoose.Schema({
     enum: ['Morning', 'Afternoon', 'Evening'],
     required: true,
   },
-  subjectId: { type: String, required: true },
+  subjectId: { type: String, default: '' },
   actual: { type: Boolean, default: false },
 }, { _id: false });
 

@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { signInWithGoogle, isAuthenticated, isLoading } = useUser();
+  const { signInWithGoogle, isAuthenticated, isLoading, login } = useUser();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +48,18 @@ export default function Landing() {
     } finally {
       setIsSigningIn(false);
     }
+  };
+
+  // Demo mode - show dashboard without authentication
+  const handleDemoMode = () => {
+    console.log("✓ Demo mode activated");
+    login({
+      id: 'demo-user-' + Date.now(),
+      name: 'Demo User',
+      email: 'demo@acadplan.com',
+      institution: 'Demo University',
+    });
+    navigate('/');
   };
 
   const features = [
@@ -185,18 +197,19 @@ export default function Landing() {
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
                           <span className="bg-white dark:bg-slate-950 px-2 text-muted-foreground">
-                            or continue with
+                            or
                           </span>
                         </div>
                       </div>
 
                       <Button
-                        onClick={handleGoogleSignIn}
+                        onClick={handleDemoMode}
                         disabled={isSigningIn}
                         className="w-full"
                         size="lg"
+                        variant="secondary"
                       >
-                        Create New Account
+                        View Demo
                       </Button>
                     </>
                   )}
